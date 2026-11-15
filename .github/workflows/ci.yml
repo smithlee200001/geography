@@ -1,0 +1,73 @@
+name: Geography CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: geography-ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check 3D demos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Check JavaScript syntax
+        run: |
+          for script in earth-motion-3d/*.js earth-orbit-3d/*.js; do
+            node --check "$script"
+          done
+
+      - name: Run orbital model tests
+        run: node --test earth-orbit-3d/model.test.cjs
+
+      - name: Check offline entry points and winter diagram
+        run: |
+          python3 - <<'PY'
+          import ast
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlsplit
+
+          class Assets(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.paths = []
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag in ("script", "img") and "src" in attrs:
+                      self.paths.append((tag, attrs["src"]))
+                  if tag == "link" and "stylesheet" in attrs.get("rel", "").split():
+                      self.paths.append((tag, attrs["href"]))
+
+          for dirname in ("earth-motion-3d", "earth-orbit-3d"):
+              root = Path(dirname).resolve()
+              parser = Assets()
+              parser.feed((root / "index.html").read_text(encoding="utf-8"))
+              assert {"script", "link"} <= {tag for tag, _ in parser.paths}, dirname
+              for _, ref in parser.paths:
+                  url = urlsplit(ref)
+                  target = (root / url.path).resolve()
+                  assert not url.scheme and not url.netloc and target.is_relative_to(root) and target.is_file(), f"{dirname}: {ref}"
+
+          image = Path("earth-motion-3d/winter-solstice-3d.png")
+          assert image.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), image
+          ast.parse(Path("earth-motion-3d/draw_winter.py").read_text(encoding="utf-8"))
+          PY
