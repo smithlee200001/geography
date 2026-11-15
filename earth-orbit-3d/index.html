@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#091521"><title>绕太阳的一年 · 地球公转 3D</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="model.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+<header><p class="eyebrow">地理实验室 / 02</p><h1>绕太阳的一年<span>地球公转 · 3D 探索</span></h1><p class="intro">地球在移动，地轴的指向基本不变。拖动视角，看看四季如何发生。</p></header>
+<section class="experiment" aria-label="地球公转交互演示">
+<div class="scene-head"><div><span class="dot"></span><strong id="season">北半球 · 冬至</strong><span id="day">自冬至起 0 天</span></div><span class="badge">模型比例经过放大</span></div>
+<div class="viewport"><canvas id="scene" tabindex="0" role="img" aria-label="三维地球公转模型。拖动改变视角，也可用方向键旋转，或使用下方视角按钮。"></canvas><div class="hint">拖动旋转视角 · 方向键也可以</div><div class="legend"><span class="earth-key"></span>当前地球 <span class="axis-key"></span>地轴倾角 23.4°</div></div>
+<div class="view-controls" aria-label="视角控制"><button data-view="oblique" aria-pressed="true">立体视角</button><button data-view="top" aria-pressed="false">北极上空</button><button data-view="side" aria-pressed="false">侧面视角</button><label><input id="ghosts" type="checkbox" checked> 四季位置与平行地轴</label></div>
+<div class="transport"><button id="play" class="primary" aria-pressed="false">▶ 开始公转</button><label class="speed">播放速度 <select id="speed"><option value="0.12">慢速</option><option value="0.25" selected>标准</option><option value="0.6">快速</option></select></label><output id="progress">0 / 365.25 天</output></div>
+<label class="timeline-label" for="timeline">一年进度 <span>从冬至出发，向前走完一圈</span></label><input id="timeline" class="timeline" type="range" min="0" max="365.25" step="0.25" value="0" aria-valuetext="自冬至起 0 天">
+<div class="seasons"><button data-phase="0" aria-pressed="true"><b>冬至</b><span>约 12 月 22 日</span></button><button data-phase="1" aria-pressed="false"><b>春分</b><span>约 3 月 20 日</span></button><button data-phase="2" aria-pressed="false"><b>夏至</b><span>约 6 月 21 日</span></button><button data-phase="3" aria-pressed="false"><b>秋分</b><span>约 9 月 23 日</span></button></div>
+</section>
+<section class="notes"><article><span class="number">01 / 此刻</span><h2 id="explain-title">北极背向太阳</h2><p id="explain">北半球接收到的阳光更斜，白昼较短；南半球正好相反。</p><p class="metric">太阳直射纬度 <strong id="declination">南纬 23.4°</strong></p></article><article><span class="number">02 / 看懂模型</span><h2>四季不是远近造成的</h2><p>倾斜的地轴与全年近似不变的指向，使不同半球获得的日照随公转改变。</p><p class="fine">这里以圆形轨道示意；斜视时它看起来是椭圆。真实轨道略呈椭圆，太阳和地球的尺寸、距离均未按比例绘制。季度等分用于教学，不代表精确节气时刻。</p></article></section>
+<footer>公转方向：从北极上空看为逆时针。地球自转未在本演示中加速展示。<br><a href="https://science.nasa.gov/earth/facts/" target="_blank" rel="noopener noreferrer">NASA · 地球资料</a> · 无需联网即可使用演示</footer>
+</main></body></html>
